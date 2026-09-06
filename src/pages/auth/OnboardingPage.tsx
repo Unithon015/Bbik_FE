@@ -143,7 +143,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex w-full flex-col bg-white lg:w-1/2">
+      <div className="w-full flex-col items-center bg-white lg:w-1/2">
         {/* Scrollable area */}
         <div className="flex flex-1 flex-col overflow-y-auto px-8 pt-10">
           <div className="mx-auto w-full max-w-md">
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Fixed bottom button */}
-        <div className="px-8 pt-4 pb-8">
+        <div className="px-8 pb-8">
           <div className="mx-auto w-full max-w-sm">
             <button
               onClick={() => {
