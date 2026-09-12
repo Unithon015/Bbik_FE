@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroScrollSection from './HeroScrollSection';
+import { tokenStore } from '@/features/auth/store/tokenStore';
 
 function parseJwtPayload(token: string): Record<string, unknown> | null {
   try {
@@ -34,19 +35,20 @@ const steps = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem('token');
+  const isLoggedIn = !!tokenStore.getToken();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (!token) return;
 
-    localStorage.setItem('token', token);
+    tokenStore.setToken(token);
 
     const payload = parseJwtPayload(token);
     if (payload) {
       const email = (payload.email ?? '') as string;
-      localStorage.setItem('user', JSON.stringify({ email }));
+      const name = (payload.name ?? email) as string;
+      tokenStore.setUser({ email, name });
     }
 
     const isOnboarded = localStorage.getItem('onboarding_complete');

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { tokenStore } from '@/features/auth/store/tokenStore';
 
 const questions = [
   {
@@ -64,14 +65,15 @@ export default function OnboardingPage() {
     const urlToken = params.get('token') ?? params.get('access_token');
 
     if (urlToken) {
-      localStorage.setItem('token', urlToken);
+      tokenStore.setToken(urlToken);
       const payload = parseJwtPayload(urlToken);
       if (payload) {
         const name = (payload.name ?? payload.nickname ?? payload.email ?? '') as string;
-        localStorage.setItem('user', JSON.stringify({ name }));
+        const email = (payload.email ?? '') as string;
+        tokenStore.setUser({ name, email });
       }
       window.history.replaceState({}, '', '/onboarding');
-    } else if (!localStorage.getItem('token')) {
+    } else if (!tokenStore.getToken()) {
       navigate('/login', { replace: true });
     }
   }, [navigate]);

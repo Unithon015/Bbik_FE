@@ -1,12 +1,24 @@
+import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Navbar from '@/shared/components/Navbar';
+import { tokenStore } from '@/features/auth/store/tokenStore';
+import { refreshToken } from '@/features/auth/api/authApi';
 
 export default function ProtectedLayout() {
-  const token = localStorage.getItem('token');
+  const [status, setStatus] = useState<'loading' | 'ok' | 'fail'>(() =>
+    tokenStore.getToken() ? 'ok' : 'loading',
+  );
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    if (status !== 'loading') return;
+
+    refreshToken()
+      .then(() => setStatus('ok'))
+      .catch(() => setStatus('fail'));
+  }, [status]);
+
+  if (status === 'loading') return null;
+  if (status === 'fail') return <Navigate to="/login" replace />;
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
