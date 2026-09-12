@@ -1,14 +1,4 @@
-import axios from 'axios';
-
-const dashboardApi = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
-
-dashboardApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { apiClient as dashboardApi } from '@/shared/api/apiClient';
 
 export interface ContentAsset {
   id: string;

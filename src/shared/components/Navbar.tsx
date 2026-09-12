@@ -1,13 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import bbikFullLogo from '@/shared/assets/bbik-full-logo.svg';
+import { tokenStore } from '@/features/auth/store/tokenStore';
+import { logout } from '@/features/auth/api/authApi';
 
 interface NavbarProps {
   isLoggedIn?: boolean;
 }
 
 export default function Navbar({ isLoggedIn = false }: NavbarProps) {
-  const user = JSON.parse(localStorage.getItem('user') ?? '{}') as { email?: string };
-  const initial = (user.email?.[0] ?? '').toUpperCase();
+  const navigate = useNavigate();
+  const user = tokenStore.getUser();
+  const initial = (user?.name?.[0] ?? user?.email?.[0] ?? '').toUpperCase();
+
+  async function handleLogout() {
+    await logout();
+    navigate('/login', { replace: true });
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -23,6 +31,9 @@ export default function Navbar({ isLoggedIn = false }: NavbarProps) {
             <Link to="/settings" className="text-sm text-gray-500 hover:text-gray-900">
               설정
             </Link>
+            <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-900">
+              로그아웃
+            </button>
             <div className="flex size-9 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
               {initial}
             </div>

@@ -3,20 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { googleLogo, bbikFullLogo } from '@/shared/assets';
+import { bbikFullLogo } from '@/shared/assets';
 import Input from '@/shared/components/Input';
-import { login } from '@/features/auth/api/authApi';
-
-const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/auth/google/login`;
+import { signup } from '@/features/auth/api/authApi';
 
 const schema = z.object({
+  name: z.string().min(1, '이름을 입력해주세요'),
   email: z.string().email('올바른 이메일을 입력해주세요'),
-  password: z.string().min(1, '비밀번호를 입력해주세요'),
+  password: z.string().min(15, '비밀번호는 15자 이상이어야 합니다'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export default function LoginPage() {
+export default function SignupPage() {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
 
@@ -29,15 +28,16 @@ export default function LoginPage() {
   async function onSubmit(values: FormValues) {
     setServerError('');
     try {
-      await login(values.email, values.password);
-      const isOnboarded = localStorage.getItem('onboarding_complete');
-      navigate(isOnboarded ? '/dashboard' : '/onboarding', { replace: true });
+      await signup(values.email, values.password, values.name);
+      navigate('/onboarding', { replace: true });
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
-      if (status === 401) {
-        setServerError('이메일 또는 비밀번호가 올바르지 않습니다.');
+      if (status === 409) {
+        setServerError('이미 가입된 이메일입니다.');
+      } else if (status === 422) {
+        setServerError('입력 형식을 확인해주세요.');
       } else {
-        setServerError('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+        setServerError('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
   }
@@ -65,15 +65,12 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Decorative Cards */}
         <div className="relative h-80 items-center">
           <img
             src="/logo-picture.svg"
             alt=""
             className="h-85 w-full object-contain object-left-bottom"
           />
-
-          {/* Result card */}
           <div className="absolute right-8 bottom-0 left-4 mx-25 rounded-2xl bg-white p-5 shadow-md">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[15px] font-bold text-gray-900">검수 결과가 정리됐어요</span>
@@ -93,13 +90,18 @@ export default function LoginPage() {
       {/* Right Panel */}
       <div className="flex w-full flex-col items-center justify-center bg-white px-8 lg:w-1/2">
         <div className="w-full max-w-sm">
-          {/* Logo */}
           <div className="mb-10 flex items-center gap-3">
             <img src={bbikFullLogo} alt="삐빅" className="h-9" />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+            <Input
+              label="이름"
+              type="text"
+              placeholder="홍길동"
+              {...register('name')}
+              error={errors.name?.message}
+            />
             <Input
               label="이메일"
               type="email"
@@ -110,14 +112,9 @@ export default function LoginPage() {
             <Input
               label="비밀번호"
               type="password"
-              placeholder="비밀번호를 입력해주세요"
+              placeholder="15자 이상의 비밀번호를 입력해주세요"
               {...register('password')}
               error={errors.password?.message}
-              rightElement={
-                <Link to="/forgot-password" className="text-xs text-violet-600 hover:underline">
-                  비밀번호 찾기
-                </Link>
-              }
             />
 
             {serverError && <p className="text-sm text-red-500">{serverError}</p>}
@@ -127,33 +124,14 @@ export default function LoginPage() {
               disabled={isSubmitting}
               className="w-full rounded-xl bg-[#7047E8] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-violet-700 disabled:opacity-60"
             >
-              {isSubmitting ? '로그인 중...' : '로그인'}
+              {isSubmitting ? '가입 중...' : '회원가입'}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-xs text-gray-400">또는</span>
-            <div className="h-px flex-1 bg-gray-200" />
-          </div>
-
-          {/* Google */}
-          <button
-            onClick={() => {
-              window.location.href = GOOGLE_LOGIN_URL;
-            }}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 py-3.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            <img src={googleLogo} alt="Google" className="size-5" />
-            Google로 계속하기
-          </button>
-
-          {/* Sign up */}
           <p className="mt-8 text-center text-sm text-gray-500">
-            아직 계정이 없으신가요?{' '}
-            <Link to="/signup" className="font-medium text-violet-600 hover:underline">
-              회원가입
+            이미 계정이 있으신가요?{' '}
+            <Link to="/login" className="font-medium text-violet-600 hover:underline">
+              로그인
             </Link>
           </p>
         </div>
