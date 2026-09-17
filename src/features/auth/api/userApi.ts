@@ -17,6 +17,18 @@ export interface AudienceProfilePayload {
   account_purposes: string[];
 }
 
+export interface AudienceProfile extends AudienceProfilePayload {
+  id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function saveAudienceProfile(payload: AudienceProfilePayload): Promise<void> {
   await apiClient.put('/users/me/audience-profile', payload);
+}
+
+export async function getAudienceProfile(): Promise<AudienceProfile> {
+  const { data } = await apiClient.get<AudienceProfile>('/users/me/audience-profile');
+  return data;
 }
