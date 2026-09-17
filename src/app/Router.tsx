@@ -9,6 +9,7 @@ import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import AnalyzingPage from '@/pages/dashboard/AnalyzingPage';
 import ResultPage from '@/pages/dashboard/ResultPage';
+import MyPage from '@/pages/mypage/MyPage';
 import NotFoundPage from '@/pages/error/NotFoundPage';
 
 export const router = createBrowserRouter([
@@ -41,6 +42,11 @@ export const router = createBrowserRouter([
       { path: 'analyzing', element: <AnalyzingPage /> },
       { path: 'result', element: <ResultPage /> },
     ],
+  },
+  {
+    path: '/mypage',
+    element: <ProtectedLayout />,
+    children: [{ index: true, element: <MyPage /> }],
   },
   {
     path: '*',

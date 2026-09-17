@@ -61,8 +61,9 @@ export default function DashboardPage() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [text, setText] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   const { mutate: createContent, isPending } = useCreateContent();
-  const { data: myContents, isLoading: isContentsLoading } = useGetMyContents();
+  const { data: myContents, isLoading: isContentsLoading } = useGetMyContents(page);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -73,12 +74,12 @@ export default function DashboardPage() {
       return;
     }
     setUploadError(null);
-    const newItems = files.map((file) => ({
-      id: nextId++,
-      file,
-      previewUrl: URL.createObjectURL(file),
-    }));
-    setAttachedFiles((prev) => [...prev, ...newItems]);
+    const file = files[0];
+    if (!file) return;
+    setAttachedFiles((prev) => {
+      prev.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+      return [{ id: nextId++, file, previewUrl: URL.createObjectURL(file) }];
+    });
     e.target.value = '';
   }
 
@@ -156,7 +157,7 @@ export default function DashboardPage() {
             ref={fileInputRef}
             type="file"
             accept="image/*,video/*"
-            multiple
+
             className="hidden"
             onChange={handleFileChange}
           />
@@ -192,7 +193,6 @@ export default function DashboardPage() {
       {/* Recent section */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-900">최근 검수한 콘텐츠</h2>
-        <button className="text-sm text-violet-600 hover:underline">전체 보기</button>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
@@ -222,6 +222,26 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {!isContentsLoading && (page > 1 || (myContents?.items.length ?? 0) > 0) && (
+        <div className="mt-4 flex items-center justify-center gap-3">
+          <button
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page === 1}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            이전
+          </button>
+          <span className="text-sm text-gray-500">{page}페이지</span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={(myContents?.items.length ?? 0) < 10}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            다음
+          </button>
+        </div>
+      )}
     </PageLayout>
   );
 }

@@ -73,15 +73,15 @@ export default function Navbar({ isLoggedIn = false }: NavbarProps) {
             <Link to="/dashboard" className="text-sm text-violet-600 hover:text-violet-800">
               작업 목록
             </Link>
-            <Link to="/settings" className="text-sm text-gray-500 hover:text-gray-900">
-              설정
-            </Link>
             <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-900">
               로그아웃
             </button>
-            <div className="flex size-9 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
+            <Link
+              to="/mypage"
+              className="flex size-9 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700 hover:bg-violet-200"
+            >
               {initial}
-            </div>
+            </Link>
           </div>
         ) : (
           <nav className="flex items-center gap-8">
