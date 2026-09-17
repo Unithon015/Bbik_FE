@@ -2,7 +2,7 @@ import { apiClient as dashboardApi } from '@/shared/api/apiClient';
 
 export interface ContentAsset {
   id: string;
-  content_type: 'IMAGE' | 'VIDEO' | 'TEXT';
+  content_type: 'image' | 'video';
   original_filename: string;
   mime_type: string;
   byte_size: number;
@@ -13,9 +13,17 @@ export interface Content {
   id: string;
   title: string;
   caption_text: string | null;
-  status: 'QUEUED' | 'PROCESSING' | 'DONE' | 'FAILED';
+  status: 'pending' | 'completed' | 'failed';
+  type: string[];
   assets: ContentAsset[];
   created_at: string;
+}
+
+export async function getContents(page = 1): Promise<{ items: Content[] }> {
+  const { data } = await dashboardApi.get<{ items: Content[] }>('/contents', {
+    params: { page },
+  });
+  return data;
 }
 
 export async function getContent(contentId: string): Promise<Content> {
@@ -74,18 +82,30 @@ export async function getAnalysis(contentId: string): Promise<Analysis> {
   return data;
 }
 
+export async function resolveFinding(contentId: string, findingId: string): Promise<void> {
+  await dashboardApi.patch(`/contents/${contentId}/findings/${findingId}/resolve`);
+}
+
+export async function deleteFinding(contentId: string, findingId: string): Promise<void> {
+  await dashboardApi.delete(`/contents/${contentId}/findings/${findingId}`);
+}
+
 export interface ContentSummary {
   id: string;
   title: string;
-  status: 'QUEUED' | 'ANALYZING' | 'COMPLETED' | 'FAILED';
+  status: 'pending' | 'completed' | 'failed';
   pending_findings_count: number;
   completed_at: string | null;
   created_at: string;
 }
 
-export async function getMyContents(limit = 20): Promise<ContentSummary[]> {
-  const { data } = await dashboardApi.get<{ items: ContentSummary[] }>('/contents/me', {
-    params: { limit },
+export interface PaginatedContents {
+  items: ContentSummary[];
+}
+
+export async function getMyContents(page = 1): Promise<PaginatedContents> {
+  const { data } = await dashboardApi.get<PaginatedContents>('/contents/me', {
+    params: { page },
   });
-  return data.items;
+  return data;
 }
