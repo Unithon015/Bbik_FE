@@ -223,7 +223,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {!isContentsLoading && (myContents?.items.length ?? 0) > 0 && (
+      {!isContentsLoading && (page > 1 || (myContents?.items.length ?? 0) > 0) && (
         <div className="mt-4 flex items-center justify-center gap-3">
           <button
             onClick={() => setPage((p) => p - 1)}
