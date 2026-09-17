@@ -74,12 +74,12 @@ export default function DashboardPage() {
       return;
     }
     setUploadError(null);
-    const newItems = files.map((file) => ({
-      id: nextId++,
-      file,
-      previewUrl: URL.createObjectURL(file),
-    }));
-    setAttachedFiles((prev) => [...prev, ...newItems]);
+    const file = files[0];
+    if (!file) return;
+    setAttachedFiles((prev) => {
+      prev.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+      return [{ id: nextId++, file, previewUrl: URL.createObjectURL(file) }];
+    });
     e.target.value = '';
   }
 
@@ -157,7 +157,7 @@ export default function DashboardPage() {
             ref={fileInputRef}
             type="file"
             accept="image/*,video/*"
-            multiple
+
             className="hidden"
             onChange={handleFileChange}
           />
@@ -223,7 +223,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {!isContentsLoading && (myContents?.items.length ?? 0) > 0 && (
+      {!isContentsLoading && (page > 1 || (myContents?.items.length ?? 0) > 0) && (
         <div className="mt-4 flex items-center justify-center gap-3">
           <button
             onClick={() => setPage((p) => p - 1)}

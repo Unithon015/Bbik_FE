@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tokenStore } from '@/features/auth/store/tokenStore';
+import { saveAudienceProfile } from '@/features/auth/api/userApi';
 
 const questions = [
   {
@@ -8,17 +9,17 @@ const questions = [
     label: '주로 어떤 콘텐츠를 올리나요?',
     max: 2,
     chips: [
-      '뷰티·패션',
-      '건강·운동',
-      '다이어트',
-      '음식',
-      '육아',
-      '게임',
-      '금융·투자',
-      '일상',
-      '엔터·팬덤',
-      '교육·정보',
-      '여행',
+      { label: '뷰티·패션', value: 'beauty_fashion' },
+      { label: '건강·운동', value: 'health_fitness' },
+      { label: '다이어트', value: 'diet' },
+      { label: '음식', value: 'food' },
+      { label: '육아', value: 'parenting' },
+      { label: '게임', value: 'gaming' },
+      { label: '금융·투자', value: 'finance_investing' },
+      { label: '일상', value: 'daily_life' },
+      { label: '엔터·팬덤', value: 'entertainment_fandom' },
+      { label: '교육·정보', value: 'education_information' },
+      { label: '여행', value: 'travel' },
     ],
   },
   {
@@ -26,24 +27,31 @@ const questions = [
     label: '어떤 분들이 많이 시청하나요?',
     max: 2,
     chips: [
-      '10대',
-      '20~30대',
-      '40대 이상',
-      '남성',
-      '여성',
-      '운동·다이어트 관심층',
-      '부모·육아층',
-      '게임 팬덤',
-      '아이돌 관심층',
-      '투자 관심층',
-      '일반 대중',
+      { label: '10대', value: 'teens' },
+      { label: '20~30대', value: 'twenties_thirties' },
+      { label: '40대 이상', value: 'forties_plus' },
+      { label: '남성', value: 'men' },
+      { label: '여성', value: 'women' },
+      { label: '운동·다이어트 관심층', value: 'fitness_diet_interest' },
+      { label: '부모·육아층', value: 'parenting' },
+      { label: '게임 팬덤', value: 'gaming_fandom' },
+      { label: '아이돌 관심층', value: 'idol_interest' },
+      { label: '투자 관심층', value: 'finance_investing_interest' },
+      { label: '일반 대중', value: 'general_public' },
     ],
   },
   {
     id: 2,
     label: '계정은 어떤 목적으로 운영하나요?',
     max: 2,
-    chips: ['정보 제공', '제품·서비스 홍보', '후기·리뷰', '팬 커뮤니티', '일상 공유', '유머·풍자'],
+    chips: [
+      { label: '정보 제공', value: 'information' },
+      { label: '제품·서비스 홍보', value: 'promotion' },
+      { label: '후기·리뷰', value: 'review' },
+      { label: '팬 커뮤니티', value: 'fan_community' },
+      { label: '일상 공유', value: 'daily_life' },
+      { label: '유머·풍자', value: 'humor_satire' },
+    ],
   },
 ];
 
@@ -59,6 +67,7 @@ function parseJwtPayload(token: string): Record<string, unknown> | null {
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string[][]>([[], [], []]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -178,12 +187,12 @@ export default function OnboardingPage() {
                   <p className="mb-3 text-xs text-gray-400">최대 {q.max}개 선택</p>
                   <div className="flex flex-wrap gap-2">
                     {q.chips.map((chip) => {
-                      const isSelected = selected[qIdx].includes(chip);
+                      const isSelected = selected[qIdx].includes(chip.value);
                       const isDisabled = !isSelected && selected[qIdx].length >= q.max;
                       return (
                         <button
-                          key={chip}
-                          onClick={() => toggleChip(qIdx, chip)}
+                          key={chip.value}
+                          onClick={() => toggleChip(qIdx, chip.value)}
                           disabled={isDisabled}
                           className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all ${
                             isSelected
@@ -193,7 +202,7 @@ export default function OnboardingPage() {
                                 : 'border-gray-200 bg-white text-gray-600 hover:border-[#7047E8] hover:text-[#7047E8]'
                           }`}
                         >
-                          {chip}
+                          {chip.label}
                         </button>
                       );
                     })}
@@ -208,13 +217,23 @@ export default function OnboardingPage() {
         <div className="px-8 pb-8">
           <div className="mx-auto w-full max-w-sm">
             <button
-              onClick={() => {
-                localStorage.setItem('onboarding_complete', 'true');
-                navigate('/dashboard');
+              disabled={isSaving}
+              onClick={async () => {
+                setIsSaving(true);
+                try {
+                  await saveAudienceProfile({
+                    content_categories: selected[0],
+                    audience_contexts: selected[1],
+                    account_purposes: selected[2],
+                  });
+                } finally {
+                  localStorage.setItem('onboarding_complete', 'true');
+                  navigate('/dashboard');
+                }
               }}
-              className="w-full rounded-xl bg-[#7047E8] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-violet-700"
+              className="w-full rounded-xl bg-[#7047E8] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-violet-700 disabled:opacity-60"
             >
-              설정 완료하고 시작하기
+              {isSaving ? '저장 중...' : '설정 완료하고 시작하기'}
             </button>
           </div>
         </div>
