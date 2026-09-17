@@ -83,11 +83,11 @@ export async function getAnalysis(contentId: string): Promise<Analysis> {
 }
 
 export async function resolveFinding(contentId: string, findingId: string): Promise<void> {
-  await dashboardApi.patch(`/contents/${contentId}/findings/${findingId}/`);
+  await dashboardApi.patch(`/contents/${contentId}/findings/${findingId}`);
 }
 
 export async function deleteFinding(contentId: string, findingId: string): Promise<void> {
-  await dashboardApi.delete(`/contents/${contentId}/findings/${findingId}/`);
+  await dashboardApi.delete(`/contents/${contentId}/findings/${findingId}`);
 }
 
 export interface ContentSummary {
