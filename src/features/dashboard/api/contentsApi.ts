@@ -2,7 +2,7 @@ import { apiClient as dashboardApi } from '@/shared/api/apiClient';
 
 export interface ContentAsset {
   id: string;
-  content_type: 'image' | 'video';
+  content_type: 'IMAGE' | 'VIDEO';
   original_filename: string;
   mime_type: string;
   byte_size: number;
@@ -51,6 +51,8 @@ export interface Evidence {
   provider: string | null;
 }
 
+export type FindingStatus = 'PENDING' | 'RESOLVED' | 'DISMISSED';
+
 export interface Finding {
   id: string;
   type: string[];
@@ -59,6 +61,7 @@ export interface Finding {
   signal_type: string;
   reason: string;
   excerpt: string;
+  status: FindingStatus;
   asset_id: string | null;
   start_ms: number | null;
   end_ms: number | null;

@@ -88,8 +88,8 @@ function buildContent(content: Content): AnalysisContent {
   const result: AnalysisContent = {};
   for (const asset of content.assets) {
     const url = `${BASE_URL}${asset.download_url}`;
-    if (asset.content_type === 'image') result.imageUrl = url;
-    if (asset.content_type === 'video') result.videoUrl = url;
+    if (asset.content_type === 'IMAGE') result.imageUrl = url;
+    if (asset.content_type === 'VIDEO') result.videoUrl = url;
   }
   if (content.caption_text) result.text = content.caption_text;
   return result;
