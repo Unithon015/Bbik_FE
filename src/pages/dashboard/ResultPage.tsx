@@ -7,15 +7,17 @@ import SensitiveItem from '@/pages/dashboard/components/SensitiveItem';
 import type { Analysis, Content, Finding } from '@/features/dashboard/api/contentsApi';
 import { useGetContent } from '@/features/dashboard/model/useGetContent';
 import { useGetAnalysis } from '@/features/dashboard/model/useGetAnalysis';
+import { useResolveFinding } from '@/features/dashboard/model/useResolveFinding';
+import { useDeleteFinding } from '@/features/dashboard/model/useDeleteFinding';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const RADIUS = 44;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const PRIORITY_CONFIG = {
-  HIGH:   { fill: 1,      stroke: '#ef4444', text: 'text-red-500',    label: 'HIGH'   },
-  MEDIUM: { fill: 2 / 3,  stroke: '#f59e0b', text: 'text-amber-500',  label: 'MEDIUM' },
-  LOW:    { fill: 1 / 3,  stroke: '#eab308', text: 'text-yellow-500', label: 'LOW'    },
+  HIGH: { fill: 1, stroke: '#ef4444', text: 'text-red-500', label: 'HIGH' },
+  MEDIUM: { fill: 2 / 3, stroke: '#f59e0b', text: 'text-amber-500', label: 'MEDIUM' },
+  LOW: { fill: 1 / 3, stroke: '#eab308', text: 'text-yellow-500', label: 'LOW' },
 } as const;
 
 interface AnalysisContent {
@@ -27,6 +29,7 @@ interface AnalysisContent {
 
 interface BaseSensitiveItem {
   id: number;
+  findingId: string;
   tag: string;
   tagColor: string;
   title: string;
@@ -55,7 +58,8 @@ interface VideoSensitiveItem extends BaseSensitiveItem {
   endTime: string;
 }
 
-type SensitiveItemData = ImageSensitiveItem | TextSensitiveItem | BothSensitiveItem | VideoSensitiveItem;
+type SensitiveItemData =
+  ImageSensitiveItem | TextSensitiveItem | BothSensitiveItem | VideoSensitiveItem;
 
 function hasBbox(item: SensitiveItemData): item is ImageSensitiveItem | BothSensitiveItem {
   return item.type === 'image' || item.type === 'both';
@@ -84,8 +88,8 @@ function buildContent(content: Content): AnalysisContent {
   const result: AnalysisContent = {};
   for (const asset of content.assets) {
     const url = `${BASE_URL}${asset.download_url}`;
-    if (asset.content_type === 'IMAGE') result.imageUrl = url;
-    if (asset.content_type === 'VIDEO') result.videoUrl = url;
+    if (asset.content_type === 'image') result.imageUrl = url;
+    if (asset.content_type === 'video') result.videoUrl = url;
   }
   if (content.caption_text) result.text = content.caption_text;
   return result;
@@ -100,6 +104,7 @@ const PRIORITY_COLOR: Record<string, string> = {
 function findingToItem(finding: Finding, idx: number): SensitiveItemData {
   const base = {
     id: idx + 1,
+    findingId: finding.id,
     tag: finding.signal_type,
     tagColor: PRIORITY_COLOR[finding.priority] ?? 'bg-violet-100 text-violet-700',
     title: finding.excerpt,
@@ -138,7 +143,11 @@ function highlightText(
         const isModified = modifiedKeywords.some((k) => k.toLowerCase() === part.toLowerCase());
         const isActive = activeKeywords.some((k) => k.toLowerCase() === part.toLowerCase());
         const bgClass = isModified ? 'bg-green-100' : 'bg-red-100';
-        const textClass = isActive ? (isModified ? 'text-green-600' : 'text-red-600') : 'text-gray-900';
+        const textClass = isActive
+          ? isModified
+            ? 'text-green-600'
+            : 'text-red-600'
+          : 'text-gray-900';
         return (
           <span key={i} className={`rounded px-0.5 ${bgClass} ${textClass}`}>
             {part}
@@ -179,13 +188,17 @@ export default function ResultPage() {
         ? 'LOW'
         : null;
 
-  const isTextOnly = !!analysis && !analysis.type.includes('image') && !analysis.type.includes('video');
+  const isTextOnly =
+    !!analysis && !analysis.type.includes('image') && !analysis.type.includes('video');
   const [userLayout, setLayout] = useState<'vertical' | 'horizontal' | null>(null);
   const layout = userLayout ?? (isTextOnly ? 'vertical' : 'horizontal');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [items, setItems] = useState<SensitiveItemData[]>(initialItems);
   const [modifiedIds, setModifiedIds] = useState<Set<number>>(new Set());
   const isHorizontal = layout === 'horizontal';
+
+  const { mutate: resolveFinding } = useResolveFinding();
+  const { mutate: deleteFinding } = useDeleteFinding();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -212,14 +225,23 @@ export default function ResultPage() {
   }
 
   function handleDelete(id: number) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    const item = items.find((i) => i.id === id);
+    if (item && contentId) {
+      deleteFinding({ contentId, findingId: item.findingId });
+    }
+    setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
   }
 
   function handleToggleModified(id: number) {
+    const item = items.find((i) => i.id === id);
+    if (item && contentId) {
+      resolveFinding({ contentId, findingId: item.findingId });
+    }
     setModifiedIds((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -246,26 +268,36 @@ export default function ResultPage() {
     .filter(hasKeywords)
     .flatMap((item) => item.keywords);
 
-  const pageTitle = analysisContent.videoDuration && analysisContent.text
-    ? '영상·글 검수 결과'
-    : analysisContent.videoDuration
-      ? '영상 검수 결과'
-      : analysisContent.imageUrl && analysisContent.text
-        ? '사진·글 검수 결과'
-        : analysisContent.imageUrl
-          ? '사진 검수 결과'
-          : '글 검수 결과';
+  const pageTitle =
+    analysisContent.videoDuration && analysisContent.text
+      ? '영상·글 검수 결과'
+      : analysisContent.videoDuration
+        ? '영상 검수 결과'
+        : analysisContent.imageUrl && analysisContent.text
+          ? '사진·글 검수 결과'
+          : analysisContent.imageUrl
+            ? '사진 검수 결과'
+            : '글 검수 결과';
 
   const contentPanel = (
-    <div className={isHorizontal ? 'flex-1 overflow-y-auto max-h-[calc(100vh-15rem)] pr-2 [&::-webkit-scrollbar]:hidden' : ''}>
+    <div
+      className={
+        isHorizontal
+          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden'
+          : ''
+      }
+    >
       {analysisContent.videoUrl && (
         <div className="mb-4 rounded-2xl bg-gray-100 p-5 shadow-sm">
           <div className="mb-4 flex justify-center">
-            <div className="relative overflow-hidden rounded-2xl bg-black" style={{ width: 220, aspectRatio: '9/16' }}>
+            <div
+              className="relative overflow-hidden rounded-2xl bg-black"
+              style={{ width: 220, aspectRatio: '9/16' }}
+            >
               <video
                 ref={videoRef}
                 src={analysisContent.videoUrl}
-                className="h-full w-full object-contain"
+                className="size-full object-contain"
                 onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
@@ -276,13 +308,13 @@ export default function ResultPage() {
                 className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors hover:bg-black/20"
               >
                 {!isPlaying && (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/40">
-                    <Play className="h-5 w-5 text-white" fill="white" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-black/40">
+                    <Play className="size-5 text-white" fill="white" />
                   </div>
                 )}
               </button>
               {analysisContent.videoDuration && (
-                <div className="absolute bottom-3 right-3 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white/80">
+                <div className="absolute right-3 bottom-3 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white/80">
                   {formatTime(currentTime)} / {analysisContent.videoDuration}
                 </div>
               )}
@@ -297,8 +329,10 @@ export default function ResultPage() {
             <div className="relative mb-3 cursor-pointer py-1.5" onClick={handleTimelineClick}>
               <div className="relative h-2 overflow-hidden rounded-full bg-gray-200">
                 <div
-                  className="pointer-events-none absolute left-0 top-0 h-full bg-violet-500"
-                  style={{ width: `${Math.min(totalSecs ? (currentTime / totalSecs) * 100 : 0, 100)}%` }}
+                  className="pointer-events-none absolute top-0 left-0 h-full bg-violet-500"
+                  style={{
+                    width: `${Math.min(totalSecs ? (currentTime / totalSecs) * 100 : 0, 100)}%`,
+                  }}
                 />
                 {videoItems.map((item) => {
                   const isModified = modifiedIds.has(item.id);
@@ -307,11 +341,18 @@ export default function ResultPage() {
                   return (
                     <div
                       key={item.id}
-                      onClick={(e) => { e.stopPropagation(); handleItemClick(item.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleItemClick(item.id);
+                      }}
                       className={`absolute top-0 h-full cursor-pointer transition-colors ${
                         isModified
-                          ? selectedId === item.id ? 'bg-green-600' : 'bg-green-400'
-                          : selectedId === item.id ? 'bg-red-600' : 'bg-red-400'
+                          ? selectedId === item.id
+                            ? 'bg-green-600'
+                            : 'bg-green-400'
+                          : selectedId === item.id
+                            ? 'bg-red-600'
+                            : 'bg-red-400'
                       }`}
                       style={{ left: `${startPct}%`, width: `${endPct - startPct}%` }}
                     />
@@ -319,8 +360,10 @@ export default function ResultPage() {
                 })}
               </div>
               <div
-                className="pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-violet-500 shadow"
-                style={{ left: `${Math.min(totalSecs ? (currentTime / totalSecs) * 100 : 0, 100)}%` }}
+                className="pointer-events-none absolute top-1/2 size-3.5 -translate-1/2 rounded-full border-2 border-white bg-violet-500 shadow"
+                style={{
+                  left: `${Math.min(totalSecs ? (currentTime / totalSecs) * 100 : 0, 100)}%`,
+                }}
               />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -332,11 +375,15 @@ export default function ResultPage() {
                     onClick={() => handleItemClick(item.id)}
                     className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                       isModified
-                        ? selectedId === item.id ? 'bg-green-500 text-white' : 'bg-green-100 text-green-600'
-                        : selectedId === item.id ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'
+                        ? selectedId === item.id
+                          ? 'bg-green-500 text-white'
+                          : 'bg-green-100 text-green-600'
+                        : selectedId === item.id
+                          ? 'bg-red-500 text-white'
+                          : 'bg-red-50 text-red-500'
                     }`}
                   >
-                    <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                    <span className="size-1.5 rounded-full bg-current" />
                     {item.startTime} ~ {item.endTime} 확인
                   </button>
                 );
@@ -349,11 +396,15 @@ export default function ResultPage() {
       {analysisContent.imageUrl && (
         <div className="mb-4 flex items-center justify-center overflow-hidden rounded-2xl bg-gray-300 shadow-sm">
           <div className="relative">
-            <img src={analysisContent.imageUrl} alt="검수 이미지" className="block max-h-[700px] w-auto rounded-2xl" />
+            <img
+              src={analysisContent.imageUrl}
+              alt="검수 이미지"
+              className="block max-h-[700px] w-auto rounded-2xl"
+            />
             {activeImageItem && (
               <div className="absolute" style={activeImageItem.bbox}>
-                <div className="relative h-full w-full rounded-lg border-2 border-violet-500">
-                  <div className="absolute -left-3 -top-3 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-bold text-white">
+                <div className="relative size-full rounded-lg border-2 border-violet-500">
+                  <div className="absolute -top-3 -left-3 flex size-6 items-center justify-center rounded-full bg-violet-500 text-xs font-bold text-white">
                     {items.findIndex((i) => i.id === activeImageItem.id) + 1}
                   </div>
                 </div>
@@ -366,11 +417,16 @@ export default function ResultPage() {
       {analysisContent.text && (
         <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm">
           <div className="flex shrink-0 items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-red-400" />
+            <span className="size-2 rounded-full bg-red-400" />
             <span className="text-xs font-medium text-gray-500">민감한 표현</span>
           </div>
-          <p className="text-sm font-bold leading-6 text-gray-900">
-            {highlightText(analysisContent.text, allTextKeywords, activeTextItem?.keywords ?? [], modifiedTextKeywords)}
+          <p className="text-sm leading-6 font-bold text-gray-900">
+            {highlightText(
+              analysisContent.text,
+              allTextKeywords,
+              activeTextItem?.keywords ?? [],
+              modifiedTextKeywords,
+            )}
           </p>
         </div>
       )}
@@ -378,33 +434,49 @@ export default function ResultPage() {
   );
 
   const resultPanel = (
-    <div className={isHorizontal ? 'flex-1 overflow-y-auto max-h-[calc(100vh-15rem)] pr-2 [&::-webkit-scrollbar]:hidden' : ''}>
-      {overallPriority && (() => {
-        const cfg = PRIORITY_CONFIG[overallPriority];
-        const dashoffset = CIRCUMFERENCE * (1 - cfg.fill);
-        return (
-          <div className={`flex flex-col items-center ${isHorizontal ? 'mb-8' : 'mb-12'}`}>
-            <div className="relative">
-              <svg width="120" height="120" className="-rotate-90">
-                <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="#f3f4f6" strokeWidth="10" />
-                <circle
-                  cx="60" cy="60" r={RADIUS}
-                  fill="none"
-                  stroke={cfg.stroke}
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={CIRCUMFERENCE}
-                  strokeDashoffset={dashoffset}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-xl font-bold ${cfg.text}`}>{cfg.label}</span>
+    <div
+      className={
+        isHorizontal
+          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden'
+          : ''
+      }
+    >
+      {overallPriority &&
+        (() => {
+          const cfg = PRIORITY_CONFIG[overallPriority];
+          const dashoffset = CIRCUMFERENCE * (1 - cfg.fill);
+          return (
+            <div className={`flex flex-col items-center ${isHorizontal ? 'mb-8' : 'mb-12'}`}>
+              <div className="relative">
+                <svg width="120" height="120" className="-rotate-90">
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r={RADIUS}
+                    fill="none"
+                    stroke="#f3f4f6"
+                    strokeWidth="10"
+                  />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r={RADIUS}
+                    fill="none"
+                    stroke={cfg.stroke}
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={CIRCUMFERENCE}
+                    strokeDashoffset={dashoffset}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className={`text-xl font-bold ${cfg.text}`}>{cfg.label}</span>
+                </div>
               </div>
+              <p className="mt-3 text-sm text-gray-500">전체 콘텐츠 민감도</p>
             </div>
-            <p className="mt-3 text-sm text-gray-500">전체 콘텐츠 민감도</p>
-          </div>
-        );
-      })()}
+          );
+        })()}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-900">민감한 부분</h2>
         <span className="text-sm text-gray-400">{items.length}개의 항목</span>
@@ -412,7 +484,11 @@ export default function ResultPage() {
       <div className="flex flex-col gap-3">
         <AnimatePresence initial={false}>
           {sortedItems.map((item) => (
-            <motion.div key={item.id} layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+            <motion.div
+              key={item.id}
+              layout
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
               <SensitiveItem
                 index={initialItems.findIndex((orig) => orig.id === item.id) + 1}
                 tag={item.tag}

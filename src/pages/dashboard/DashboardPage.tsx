@@ -8,17 +8,15 @@ import { useGetMyContents } from '@/features/dashboard/model/useGetMyContents';
 import type { ContentSummary } from '@/features/dashboard/api/contentsApi';
 
 const STATUS_LABEL: Record<ContentSummary['status'], string> = {
-  QUEUED: '대기 중',
-  ANALYZING: '검수 중',
-  COMPLETED: '분석 완료',
-  FAILED: '실패',
+  pending: '검수 중',
+  completed: '분석 완료',
+  failed: '실패',
 };
 
 const STATUS_COLOR: Record<ContentSummary['status'], string> = {
-  QUEUED: 'bg-gray-50 text-gray-500',
-  ANALYZING: 'bg-amber-50 text-amber-600',
-  COMPLETED: 'bg-green-50 text-green-600',
-  FAILED: 'bg-red-50 text-red-500',
+  pending: 'bg-amber-50 text-amber-600',
+  completed: 'bg-green-50 text-green-600',
+  failed: 'bg-red-50 text-red-500',
 };
 
 function formatDate(dateString: string): string {
@@ -39,12 +37,11 @@ function formatDate(dateString: string): string {
 }
 
 function getAlert(item: ContentSummary): string {
-  if (item.status === 'COMPLETED') {
+  if (item.status === 'completed') {
     return item.pending_findings_count > 0 ? `확인 필요 ${item.pending_findings_count}건` : '';
   }
-  if (item.status === 'ANALYZING') return '검수 진행 중';
-  if (item.status === 'QUEUED') return '대기 중';
-  if (item.status === 'FAILED') return '분석 실패';
+  if (item.status === 'pending') return '검수 진행 중';
+  if (item.status === 'failed') return '분석 실패';
   return '';
 }
 
@@ -95,116 +92,119 @@ export default function DashboardPage() {
 
   return (
     <PageLayout>
-        {/* Upload section */}
-        <h1 className="mb-1 text-2xl font-bold text-gray-900">새 콘텐츠를 모니터링 해볼까요?</h1>
-        <p className="mb-6 text-sm text-gray-500">
-          이미지·영상 파일과 게시할 글을 함께 올리면 한 번에 분석해드려요.
-        </p>
+      {/* Upload section */}
+      <h1 className="mb-1 text-2xl font-bold text-gray-900">새 콘텐츠를 모니터링 해볼까요?</h1>
+      <p className="mb-6 text-sm text-gray-500">
+        이미지·영상 파일과 게시할 글을 함께 올리면 한 번에 분석해드려요.
+      </p>
 
-        <div className="mb-12 rounded-2xl border border-gray-200 bg-white px-7 py-5 shadow-sm">
-          <textarea
-            placeholder="검수할 내용을 입력하거나 파일을 올려주세요."
-            rows={4}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="w-full resize-none text-sm text-gray-700 outline-none placeholder:text-gray-400"
-            onInput={(e) => {
-              const el = e.currentTarget;
-              el.style.height = 'auto';
-              el.style.height = `${Math.min(el.scrollHeight, 450)}px`;
-            }}
-          />
+      <div className="mb-12 rounded-2xl border border-gray-200 bg-white px-7 py-5 shadow-sm">
+        <textarea
+          placeholder="검수할 내용을 입력하거나 파일을 올려주세요."
+          rows={4}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="w-full resize-none text-sm text-gray-700 outline-none placeholder:text-gray-400"
+          onInput={(e) => {
+            const el = e.currentTarget;
+            el.style.height = 'auto';
+            el.style.height = `${Math.min(el.scrollHeight, 450)}px`;
+          }}
+        />
 
-          {attachedFiles.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-3">
-              {attachedFiles.map(({ id, file, previewUrl }) => {
-                const isVideo = file.type.startsWith('video/');
-                return (
-                  <div key={id} className="group relative">
-                    {isVideo ? (
-                      <div className="flex h-20 w-32 items-center justify-center rounded-xl bg-gray-100">
-                        <Video className="h-6 w-6 text-gray-400" />
-                        <span className="ml-1.5 max-w-[72px] truncate text-xs text-gray-500">{file.name}</span>
-                      </div>
-                    ) : (
-                      <img
-                        src={previewUrl}
-                        alt={file.name}
-                        className="h-20 w-32 rounded-xl object-cover"
-                      />
-                    )}
-                    <button
-                      onClick={() => handleRemove(id)}
-                      className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-800"
-            >
-              <Plus className="h-4 w-4" />
-              파일 추가
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <button
-              disabled={isPending || (attachedFiles.length === 0 && text.trim() === '')}
-              onClick={() => {
-                setUploadError(null);
-                const file = attachedFiles[0]?.file ?? null;
-                createContent(
-                  { file, text },
-                  {
-                    onSuccess: (data) => navigate('/dashboard/analyzing', { state: { contentId: data.id, content: data } }),
-                    onError: (err: unknown) => {
-                      const status = (err as { response?: { status?: number } })?.response?.status;
-                      if (status === 413) setUploadError('파일이 너무 큽니다. 더 작은 파일을 사용해주세요.');
-                      else setUploadError('업로드에 실패했어요. 다시 시도해주세요.');
-                    },
-                  },
-                );
-              }}
-              className="rounded-xl bg-[#7047E8] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {isPending ? '업로드 중...' : '분석 시작하기'}
-            </button>
+        {attachedFiles.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-3">
+            {attachedFiles.map(({ id, file, previewUrl }) => {
+              const isVideo = file.type.startsWith('video/');
+              return (
+                <div key={id} className="group relative">
+                  {isVideo ? (
+                    <div className="flex h-20 w-32 items-center justify-center rounded-xl bg-gray-100">
+                      <Video className="size-6 text-gray-400" />
+                      <span className="ml-1.5 max-w-[72px] truncate text-xs text-gray-500">
+                        {file.name}
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={previewUrl}
+                      alt={file.name}
+                      className="h-20 w-32 rounded-xl object-cover"
+                    />
+                  )}
+                  <button
+                    onClick={() => handleRemove(id)}
+                    className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-gray-700 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              );
+            })}
           </div>
-          {uploadError && (
-            <p className="mt-3 text-sm text-red-500">{uploadError}</p>
-          )}
-        </div>
+        )}
 
-        {/* Recent section */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">최근 검수한 콘텐츠</h2>
-          <button className="text-sm text-violet-600 hover:underline">전체 보기</button>
+        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-800"
+          >
+            <Plus className="size-4" />
+            파일 추가
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <button
+            disabled={isPending || (attachedFiles.length === 0 && text.trim() === '')}
+            onClick={() => {
+              setUploadError(null);
+              const file = attachedFiles[0]?.file ?? null;
+              createContent(
+                { file, text },
+                {
+                  onSuccess: (data) =>
+                    navigate('/dashboard/analyzing', {
+                      state: { contentId: data.id, content: data },
+                    }),
+                  onError: (err: unknown) => {
+                    const status = (err as { response?: { status?: number } })?.response?.status;
+                    if (status === 413)
+                      setUploadError('파일이 너무 큽니다. 더 작은 파일을 사용해주세요.');
+                    else setUploadError('업로드에 실패했어요. 다시 시도해주세요.');
+                  },
+                },
+              );
+            }}
+            className="rounded-xl bg-[#7047E8] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {isPending ? '업로드 중...' : '분석 시작하기'}
+          </button>
         </div>
+        {uploadError && <p className="mt-3 text-sm text-red-500">{uploadError}</p>}
+      </div>
 
-        <div className="divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-white shadow-sm">
-          {isContentsLoading && (
-            <p className="px-5 py-6 text-sm text-gray-400">불러오는 중...</p>
-          )}
-          {!isContentsLoading && (!myContents || myContents.length === 0) && (
+      {/* Recent section */}
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-900">최근 검수한 콘텐츠</h2>
+        <button className="text-sm text-violet-600 hover:underline">전체 보기</button>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="divide-y divide-gray-200">
+          {isContentsLoading && <p className="px-5 py-6 text-sm text-gray-400">불러오는 중...</p>}
+          {!isContentsLoading && (!myContents || myContents.items.length === 0) && (
             <p className="px-5 py-6 text-sm text-gray-400">아직 검수한 콘텐츠가 없어요.</p>
           )}
-          {myContents?.map((item) => (
+          {myContents?.items.map((item) => (
             <RecentItem
               key={item.id}
-              icon={<FileText className="h-5 w-5 text-violet-500" />}
+              icon={<FileText className="size-5 text-violet-500" />}
               iconBg="bg-violet-50"
               title={item.title}
               meta=""
@@ -214,15 +214,14 @@ export default function DashboardPage() {
               statusColor={STATUS_COLOR[item.status]}
               onClick={() =>
                 navigate(
-                  item.status === 'COMPLETED'
-                    ? '/dashboard/result'
-                    : '/dashboard/analyzing',
+                  item.status === 'completed' ? '/dashboard/result' : '/dashboard/analyzing',
                   { state: { contentId: item.id } },
                 )
               }
             />
           ))}
         </div>
+      </div>
     </PageLayout>
   );
 }
