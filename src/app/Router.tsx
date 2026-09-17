@@ -5,9 +5,11 @@ import HomePage from '@/pages/home/HomePage';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignupPage from '@/pages/auth/SignupPage';
 import OnboardingPage from '@/pages/auth/OnboardingPage';
+import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import AnalyzingPage from '@/pages/dashboard/AnalyzingPage';
 import ResultPage from '@/pages/dashboard/ResultPage';
+import NotFoundPage from '@/pages/error/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,10 @@ export const router = createBrowserRouter([
     element: <OnboardingPage />,
   },
   {
+    path: '/auth/callback',
+    element: <AuthCallbackPage />,
+  },
+  {
     path: '/dashboard',
     element: <ProtectedLayout />,
     children: [
@@ -35,5 +41,9 @@ export const router = createBrowserRouter([
       { path: 'analyzing', element: <AnalyzingPage /> },
       { path: 'result', element: <ResultPage /> },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
