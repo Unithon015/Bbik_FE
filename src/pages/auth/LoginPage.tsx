@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { googleLogo, bbikFullLogo } from '@/shared/assets';
 import Input from '@/shared/components/Input';
-import { login } from '@/features/auth/api/authApi';
+import { login, demoLogin } from '@/features/auth/api/authApi';
 
 const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/auth/google/login`;
 
@@ -19,12 +19,26 @@ type FormValues = z.infer<typeof schema>;
 export default function LoginPage() {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
+
+  async function onDemoLogin() {
+    setIsDemoLoading(true);
+    setServerError('');
+    try {
+      await demoLogin();
+      navigate('/dashboard', { replace: true });
+    } catch {
+      setServerError('데모 로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsDemoLoading(false);
+    }
+  }
 
   async function onSubmit(values: FormValues) {
     setServerError('');
@@ -147,6 +161,15 @@ export default function LoginPage() {
           >
             <img src={googleLogo} alt="Google" className="size-5" />
             Google로 계속하기
+          </button>
+
+          {/* Demo login */}
+          <button
+            onClick={onDemoLogin}
+            disabled={isDemoLoading}
+            className="mt-3 w-full rounded-xl bg-gray-900 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-black disabled:opacity-60"
+          >
+            {isDemoLoading ? '로그인 중...' : '데모로 시작하기'}
           </button>
 
           {/* Sign up */}

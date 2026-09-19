@@ -39,6 +39,12 @@ export async function refreshToken(): Promise<AuthResponse> {
   return data;
 }
 
+export async function demoLogin(): Promise<AuthResponse> {
+  const { data } = await axios.get<AuthResponse>(`${BASE}/auth/demo-token`);
+  storeAuth(data);
+  return data;
+}
+
 export async function logout(): Promise<void> {
   await axios.post(`${BASE}/auth/logout`, null, { withCredentials: true }).catch(() => {});
   tokenStore.clear();
