@@ -96,7 +96,7 @@ export default function DashboardPage() {
       {/* Upload section */}
       <h1 className="mb-1 text-2xl font-bold text-gray-900">새 콘텐츠를 모니터링 해볼까요?</h1>
       <p className="mb-6 text-sm text-gray-500">
-        이미지·영상 파일과 게시할 글을 함께 올리면 한 번에 분석해드려요.
+        이미지 파일과 게시할 글을 함께 올리면 한 번에 분석해드려요.
       </p>
 
       <div className="mb-12 rounded-2xl border border-gray-200 bg-white px-7 py-5 shadow-sm">

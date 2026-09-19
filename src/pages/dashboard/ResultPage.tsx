@@ -418,7 +418,6 @@ export default function ResultPage() {
         <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm">
           <div className="flex shrink-0 items-center gap-1.5">
             <span className="size-2 rounded-full bg-red-400" />
-            <span className="text-xs font-medium text-gray-500">민감한 표현</span>
           </div>
           <p className="text-sm leading-6 font-bold text-gray-900">
             {highlightText(
