@@ -29,7 +29,7 @@ export default function AnalyzingPage() {
       <AnalyzingIcon className="mb-10" />
 
       <h1 className="mb-2 text-2xl font-bold text-gray-900">검수 중이에요</h1>
-      <p className="mb-10 text-sm text-gray-500">영상 속 장면과 음성을 살펴보고 있어요.</p>
+      <p className="mb-10 text-sm text-gray-500">사진과 문구를 살펴보고 있어요.</p>
 
       {/* Progress */}
       <div className="mb-5 w-full max-w-2xl">
@@ -48,11 +48,13 @@ export default function AnalyzingPage() {
       {/* File card */}
       <div className="w-full max-w-2xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50">
-            <Video className="h-5 w-5 text-violet-400" />
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-50">
+            <Video className="size-5 text-violet-400" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-gray-900">{analysis?.current_step ?? '분석 준비 중'}</p>
+            <p className="text-sm font-semibold text-gray-900">
+              {analysis?.current_step ?? '분석 준비 중'}
+            </p>
             <p className="text-xs text-gray-400">{analysis?.status ?? 'QUEUED'}</p>
           </div>
           <span className="text-sm text-gray-400">예상 소요 시간 약 1분</span>
