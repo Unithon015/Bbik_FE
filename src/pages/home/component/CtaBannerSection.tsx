@@ -9,8 +9,8 @@ export default function CtaBannerSection({ isLoggedIn }: Props) {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-[#c4afff] px-55 py-20">
-      <div className="flex items-center justify-between">
+    <section className="bg-[#c4afff] px-55 py-20 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:py-14">
+      <div className="flex items-center justify-between max-md:flex-col max-md:items-start max-md:gap-8">
         <div>
           <p className="mb-6 text-[13px] font-semibold tracking-[0.2em] text-black/50 uppercase">
             YOUR NEXT CONTENT, WITH BBIK

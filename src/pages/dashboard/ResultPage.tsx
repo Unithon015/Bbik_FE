@@ -283,7 +283,7 @@ export default function ResultPage() {
     <div
       className={
         isHorizontal
-          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden'
+          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 max-lg:max-h-none max-lg:flex-none max-lg:overflow-visible max-lg:pr-0 [&::-webkit-scrollbar]:hidden'
           : ''
       }
     >
@@ -322,7 +322,7 @@ export default function ResultPage() {
           </div>
 
           <div className="rounded-xl bg-white px-5 py-4 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between max-md:flex-wrap max-md:gap-1">
               <span className="text-xs font-medium text-gray-500">영상 타임라인</span>
               <span className="text-xs text-gray-400">문제가 있는 장면은 빨간색으로 표시돼요</span>
             </div>
@@ -395,11 +395,11 @@ export default function ResultPage() {
 
       {analysisContent.imageUrl && (
         <div className="mb-4 flex items-center justify-center overflow-hidden rounded-2xl bg-gray-300 shadow-sm">
-          <div className="relative">
+          <div className="relative max-xl:max-w-full">
             <img
               src={analysisContent.imageUrl}
               alt="검수 이미지"
-              className="block max-h-[700px] w-auto rounded-2xl"
+              className="block max-h-[700px] w-auto rounded-2xl max-xl:max-w-full"
             />
             {activeImageItem && (
               <div className="absolute" style={activeImageItem.bbox}>
@@ -436,7 +436,7 @@ export default function ResultPage() {
     <div
       className={
         isHorizontal
-          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden'
+          ? 'max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto pr-2 max-lg:max-h-none max-lg:flex-none max-lg:overflow-visible max-lg:pr-0 [&::-webkit-scrollbar]:hidden'
           : ''
       }
     >
@@ -522,7 +522,7 @@ export default function ResultPage() {
 
   return (
     <PageLayout paddingX={isHorizontal ? '' : 'px-40'}>
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex items-start justify-between max-md:flex-wrap max-md:gap-4">
         <div>
           <h1 className="mb-1 text-2xl font-bold text-gray-900">{pageTitle}</h1>
           <p className="text-sm text-gray-500">표시된 영역과 민감 요소를 확인해보세요.</p>
@@ -544,7 +544,7 @@ export default function ResultPage() {
       </div>
 
       {isHorizontal ? (
-        <div className="flex items-start gap-8">
+        <div className="flex items-start gap-8 max-lg:flex-col max-lg:items-stretch">
           {contentPanel}
           {resultPanel}
         </div>

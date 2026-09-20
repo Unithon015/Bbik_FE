@@ -7,7 +7,7 @@ interface PageLayoutProps {
 export default function PageLayout({ children, className, paddingX = 'px-40' }: PageLayoutProps) {
   return (
     <main
-      className={`mx-auto flex w-full max-w-screen-2xl flex-1 flex-col ${paddingX} py-10 ${className ?? ''}`}
+      className={`mx-auto flex w-full max-w-screen-2xl flex-1 flex-col ${paddingX} py-10 max-xl:px-20 max-lg:px-10 max-md:px-5 ${className ?? ''}`}
     >
       {children}
     </main>

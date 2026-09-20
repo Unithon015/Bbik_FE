@@ -58,7 +58,7 @@ export default function HeroScrollSection({ isLoggedIn }: Props) {
   }, [count]);
 
   return (
-    <div className="relative h-screen overflow-hidden bg-[#0e0e14]">
+    <div className="relative h-screen overflow-hidden bg-[#0e0e14] max-lg:h-auto max-md:break-keep">
       {/* 배경 컬러 오브 — 카드 뒤 배경색 */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/4 right-[10%] size-80 rounded-full bg-[#9b8ec4]/30 blur-[90px]" />
@@ -67,40 +67,41 @@ export default function HeroScrollSection({ isLoggedIn }: Props) {
       </div>
 
       {/* 상단 레이블 */}
-      <div className="absolute inset-x-0 top-6 z-10 flex justify-between px-55 pt-15">
+      <div className="absolute inset-x-0 top-6 z-10 flex justify-between px-55 pt-15 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:pt-6">
         <span className="pb-5 text-[13px] font-semibold tracking-[0.2em] text-[#d2cbdc] uppercase">
           AI CONTENT MONITORING
         </span>
-        <span className="font-regular text-[13px] tracking-[0.2em] text-[#d2cbdc] uppercase">
+        <span className="font-regular text-[13px] tracking-[0.2em] text-[#d2cbdc] uppercase max-md:hidden">
           CREATE WITH CONFIDENCE
         </span>
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="relative flex h-full items-center gap-12 px-55" style={{ zIndex: 1 }}>
+      <div
+        className="relative flex h-full items-center gap-12 px-55 max-xl:px-20 max-lg:h-auto max-lg:min-h-dvh max-lg:flex-col max-lg:items-stretch max-lg:justify-center max-lg:px-10 max-lg:pt-40 max-lg:pb-28 max-md:gap-10 max-md:px-5 max-md:pt-28 max-md:pb-24"
+        style={{ zIndex: 1 }}
+      >
         {/* 왼쪽: 히어로 텍스트 */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="flex flex-1 flex-col"
+          className="flex flex-1 flex-col max-lg:flex-none"
         >
-          <h1 className="text-[70px] leading-tight font-bold tracking-tight text-white">
+          <h1 className="text-[70px] leading-tight font-bold tracking-tight text-white max-xl:text-[clamp(2.5rem,4vw,4.375rem)] max-lg:text-[clamp(2.5rem,7vw,4.375rem)] max-md:text-[clamp(1.75rem,9vw,2.75rem)]">
             만드는 데 집중해요.
           </h1>
-          <h1 className="text-[70px] leading-tight font-bold tracking-tight text-white">
+          <h1 className="text-[70px] leading-tight font-bold tracking-tight text-white max-xl:text-[clamp(2.5rem,4vw,4.375rem)] max-lg:text-[clamp(2.5rem,7vw,4.375rem)] max-md:text-[clamp(1.75rem,9vw,2.75rem)]">
             살펴보는 건,
           </h1>
-          <h1 className="mb-8 text-[70px] leading-tight font-bold tracking-tight text-[#c4afff]">
+          <h1 className="mb-8 text-[70px] leading-tight font-bold tracking-tight text-[#c4afff] max-xl:text-[clamp(2.5rem,4vw,4.375rem)] max-lg:text-[clamp(2.5rem,7vw,4.375rem)] max-md:text-[clamp(1.75rem,9vw,2.75rem)]">
             삐빅.
           </h1>
 
-          <p className="mb-8 text-[18px] leading-relaxed text-gray-300">
+          <p className="mb-8 text-[18px] leading-relaxed text-gray-300 max-md:text-base">
             이미지부터 글까지.
-            <br />
-            놓치기 쉬운 민감한 요소를 모니터링해
-            <br />
-            당신의 다음 판단을 돕습니다.
+            <br className="max-md:hidden" /> 놓치기 쉬운 민감한 요소를 모니터링해
+            <br className="max-md:hidden" /> 당신의 다음 판단을 돕습니다.
           </p>
 
           <button
@@ -113,13 +114,13 @@ export default function HeroScrollSection({ isLoggedIn }: Props) {
         </motion.div>
 
         {/* 오른쪽: 결과 패널 */}
-        <div className="relative flex flex-1 flex-col gap-3">
+        <div className="relative flex flex-1 flex-col gap-3 max-lg:flex-none">
           {/* 원 그래프 카드 */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-            className="relative flex items-center gap-5 overflow-hidden rounded-3xl border border-white/[0.14] bg-gradient-to-b from-[rgba(255,255,255,0.07)] to-[rgba(0,0,0,0.35)] p-5 shadow-[0_24px_64px_rgba(0,0,0,0.7),inset_0_1.5px_0_rgba(255,255,255,0.55),inset_1px_0_0_rgba(255,255,255,0.1),inset_-1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-sm"
+            className="relative flex items-center gap-5 overflow-hidden rounded-3xl border border-white/[0.14] bg-gradient-to-b from-[rgba(255,255,255,0.07)] to-[rgba(0,0,0,0.35)] p-5 shadow-[0_24px_64px_rgba(0,0,0,0.7),inset_0_1.5px_0_rgba(255,255,255,0.55),inset_1px_0_0_rgba(255,255,255,0.1),inset_-1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-sm max-md:gap-4 max-md:p-4"
           >
             {/* 스펙큘러 림 — 상단 곡면 반사 */}
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[30%] rounded-t-3xl bg-gradient-to-b from-white/[0.13] to-transparent" />
@@ -154,13 +155,13 @@ export default function HeroScrollSection({ isLoggedIn }: Props) {
               </div>
             </div>
             <div className="relative">
-              <p className="mb-1 text-[18px] font-bold text-white">전체 콘텐츠 민감도</p>
+              <p className="mb-1 text-[18px] font-bold text-white max-md:text-base">
+                전체 콘텐츠 민감도
+              </p>
               <p className="text-xs leading-relaxed text-white/55">
                 AI가 콘텐츠 전체를 분석해
-                <br />
-                종합 민감도 점수를 산출합니다.
-                <br />
-                최종 판단은 사람이 직접 내립니다.
+                <br className="max-md:hidden" /> 종합 민감도 점수를 산출합니다.
+                <br className="max-md:hidden" /> 최종 판단은 사람이 직접 내립니다.
               </p>
             </div>
           </motion.div>
@@ -200,11 +201,11 @@ export default function HeroScrollSection({ isLoggedIn }: Props) {
       </div>
 
       {/* 하단 레이블 */}
-      <div className="absolute inset-x-0 bottom-6 z-10 flex justify-between px-55">
+      <div className="absolute inset-x-0 bottom-6 z-10 flex justify-between px-55 max-xl:px-20 max-lg:px-10 max-md:px-5">
         <p className="flex items-center gap-2 text-[14px] font-semibold tracking-[0.2em] text-gray-600 uppercase">
           SCROLL TO EXPLORE <span className="text-lg text-[#c4afff]">↓</span>
         </p>
-        <p className="text-[14px] text-gray-600">이미지 · 텍스트를 함께</p>
+        <p className="text-[14px] text-gray-600 max-md:hidden">이미지 · 텍스트를 함께</p>
       </div>
     </div>
   );
