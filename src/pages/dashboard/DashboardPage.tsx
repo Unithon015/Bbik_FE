@@ -99,7 +99,7 @@ export default function DashboardPage() {
         이미지 파일과 게시할 글을 함께 올리면 한 번에 분석해드려요.
       </p>
 
-      <div className="mb-12 rounded-2xl border border-gray-200 bg-white px-7 py-5 shadow-sm">
+      <div className="mb-12 rounded-2xl border border-gray-200 bg-white px-7 py-5 shadow-sm max-md:px-5">
         <textarea
           placeholder="검수할 내용을 입력하거나 파일을 올려주세요."
           rows={4}

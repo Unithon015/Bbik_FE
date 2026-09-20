@@ -57,7 +57,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen max-lg:h-auto max-lg:min-h-dvh">
       {/* Left Panel */}
       <div className="hidden w-1/2 flex-col justify-center bg-[#f0eeff] p-16 lg:flex">
         <div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
             </span>
             게시 전, 한 번 더 안전하게
           </p>
-          <h1 className="mb-5 text-[38px] leading-tight font-bold tracking-tight text-gray-900">
+          <h1 className="mb-5 text-[38px] leading-tight font-bold tracking-tight text-gray-900 max-xl:text-3xl">
             콘텐츠를 올리면,
             <br />
             민감한 요소를 먼저 찾아드려요.
@@ -88,7 +88,7 @@ export default function LoginPage() {
           />
 
           {/* Result card */}
-          <div className="absolute right-8 bottom-0 left-4 mx-25 rounded-2xl bg-white p-5 shadow-md">
+          <div className="absolute right-8 bottom-0 left-4 mx-25 rounded-2xl bg-white p-5 shadow-md max-xl:mx-0">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[15px] font-bold text-gray-900">검수 결과가 정리됐어요</span>
               <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700">
@@ -105,7 +105,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex w-full flex-col items-center justify-center bg-white px-8 lg:w-1/2">
+      <div className="flex w-full flex-col items-center justify-center bg-white px-8 max-lg:py-10 lg:w-1/2">
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="mb-10 flex items-center gap-3">

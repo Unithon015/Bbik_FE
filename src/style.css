@@ -10,6 +10,8 @@
   }
   body {
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    /* 반응형 최소 폭. 이보다 좁아지면 레이아웃 대신 가로 스크롤이 생긴다. */
+    min-width: 360px;
   }
 }
 

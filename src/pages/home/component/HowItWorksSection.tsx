@@ -18,8 +18,11 @@ const steps = [
 
 export default function HowItWorksSection() {
   return (
-    <section id="section-how" className="bg-white px-55 pt-24 pb-28">
-      <div className="mb-16 grid grid-cols-2 items-start gap-16">
+    <section
+      id="section-how"
+      className="bg-white px-55 pt-24 pb-28 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:py-16 max-md:break-keep"
+    >
+      <div className="mb-16 grid grid-cols-2 items-start gap-16 max-xl:gap-10 max-lg:grid-cols-1 max-lg:gap-6 max-md:mb-10">
         <div>
           <p className="mb-8 text-[14px] font-semibold tracking-[0.2em] text-[#7047E8] uppercase">
             HOW IT WORKS
@@ -30,7 +33,7 @@ export default function HowItWorksSection() {
             자연스럽게 이어지도록.
           </h2>
         </div>
-        <div className="flex items-start justify-end pt-2">
+        <div className="flex items-start justify-end pt-2 max-lg:justify-start max-lg:pt-0">
           <p className="text-[15px] leading-relaxed text-gray-400">
             복잡한 검토의 시작을
             <br />세 단계로 간결하게.
@@ -42,11 +45,15 @@ export default function HowItWorksSection() {
         {steps.map((step) => (
           <div
             key={step.num}
-            className="grid grid-cols-[160px_1fr_1fr] items-center border-t border-gray-200 py-8"
+            className="grid grid-cols-[160px_1fr_1fr] items-center border-t border-gray-200 py-8 max-lg:grid-cols-[100px_1fr] max-lg:gap-y-2 max-md:grid-cols-[56px_1fr]"
           >
-            <span className="text-[45px] font-bold text-[#7047E8]">{step.num}</span>
-            <span className="text-[30px] font-semibold text-gray-900">{step.title}</span>
-            <p className="text-[18px] leading-relaxed whitespace-pre-line text-gray-600">
+            <span className="text-[45px] font-bold text-[#7047E8] max-lg:row-span-2 max-lg:self-start max-md:text-4xl">
+              {step.num}
+            </span>
+            <span className="text-[30px] font-semibold text-gray-900 max-md:text-2xl">
+              {step.title}
+            </span>
+            <p className="text-[18px] leading-relaxed whitespace-pre-line text-gray-600 max-md:text-base max-md:whitespace-normal">
               {step.desc}
             </p>
           </div>

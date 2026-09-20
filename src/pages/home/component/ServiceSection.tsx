@@ -13,7 +13,7 @@ function ServiceCard({
   outerContent: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl bg-white p-6">
+    <div className="rounded-3xl bg-white p-6 max-md:p-5">
       <div className="mb-5 flex items-center justify-between">
         <p className="text-[15px] font-semibold text-gray-900">{title}</p>
         <span className="rounded-full bg-gray-100 px-3 py-1 text-[13px] text-gray-500">
@@ -94,8 +94,11 @@ export default function ServiceSection() {
   const [activeTab, setActiveTab] = useState<Tab>('이미지');
 
   return (
-    <section id="section-service" className="bg-[#ede9ff] px-55 pt-20 pb-24">
-      <div className="mb-14 grid grid-cols-2 gap-24">
+    <section
+      id="section-service"
+      className="bg-[#ede9ff] px-55 pt-20 pb-24 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:py-16 max-md:break-keep"
+    >
+      <div className="mb-14 grid grid-cols-2 gap-24 max-xl:gap-12 max-lg:grid-cols-1 max-lg:gap-6 max-md:mb-10">
         <div>
           <p className="mb-8 text-[13px] font-semibold tracking-[0.2em] text-[#7047E8] uppercase">
             OUR SERVICE
@@ -109,10 +112,8 @@ export default function ServiceSection() {
         <div className="flex items-end">
           <p className="text-base leading-relaxed text-gray-500">
             서로 다른 콘텐츠를 한 번에.
-            <br />
-            각각의 요소뿐 아니라
-            <br />
-            함께 놓았을 때의 맥락까지 살펴봅니다.
+            <br className="max-md:hidden" /> 각각의 요소뿐 아니라
+            <br className="max-md:hidden" /> 함께 놓았을 때의 맥락까지 살펴봅니다.
           </p>
         </div>
       </div>
@@ -132,7 +133,7 @@ export default function ServiceSection() {
       </div>
 
       {activeTab === '이미지' && (
-        <div className="grid grid-cols-[2fr_3fr] gap-16">
+        <div className="grid grid-cols-[2fr_3fr] gap-16 max-xl:gap-10 max-lg:grid-cols-1 max-lg:gap-8">
           <div className="flex flex-col justify-center">
             <p className="mb-4 text-[13px] font-semibold tracking-widest text-gray-400 uppercase">
               01 / IMAGE
@@ -144,8 +145,7 @@ export default function ServiceSection() {
             </h3>
             <p className="mb-6 text-sm leading-relaxed text-gray-500">
               이미지에 담긴 민감한 요소를 확인합니다. 눈에 띄는
-              <br />
-              표현뿐 아니라 함께 쓰인 글과의 맥락도 살펴보세요.
+              <br className="max-md:hidden" /> 표현뿐 아니라 함께 쓰인 글과의 맥락도 살펴보세요.
             </p>
             <p className="text-sm text-gray-400">— JPG · PNG · 이미지 콘텐츠</p>
           </div>
@@ -154,7 +154,7 @@ export default function ServiceSection() {
       )}
 
       {activeTab === '텍스트' && (
-        <div className="grid grid-cols-[2fr_3fr] gap-16">
+        <div className="grid grid-cols-[2fr_3fr] gap-16 max-xl:gap-10 max-lg:grid-cols-1 max-lg:gap-8">
           <div className="flex flex-col justify-center">
             <p className="mb-4 text-[13px] font-semibold tracking-widest text-gray-400 uppercase">
               02 / TEXT
@@ -166,10 +166,8 @@ export default function ServiceSection() {
             </h3>
             <p className="mb-6 text-sm leading-relaxed text-gray-500">
               글에 담긴 정치적 발언, 혐오 표현, 비속어 등 민감한
-              <br />
-              요소를 정리합니다. 독자가 받아들일 맥락을 한 번 더
-              <br />
-              확인해 보세요.
+              <br className="max-md:hidden" /> 요소를 정리합니다. 독자가 받아들일 맥락을 한 번 더
+              <br className="max-md:hidden" /> 확인해 보세요.
             </p>
             <p className="text-sm text-gray-400">— TEXT · 글 콘텐츠</p>
           </div>

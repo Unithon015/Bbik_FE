@@ -3,10 +3,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 import Navbar from '@/shared/components/Navbar';
 import { tokenStore } from '@/features/auth/store/tokenStore';
 import { refreshToken } from '@/features/auth/api/authApi';
+import { IS_DEV_BYPASS_AUTH } from '@/shared/lib/devMode';
 
 export default function ProtectedLayout() {
   const [status, setStatus] = useState<'loading' | 'ok' | 'fail'>(() =>
-    tokenStore.getToken() ? 'ok' : 'loading',
+    IS_DEV_BYPASS_AUTH || tokenStore.getToken() ? 'ok' : 'loading',
   );
 
   useEffect(() => {

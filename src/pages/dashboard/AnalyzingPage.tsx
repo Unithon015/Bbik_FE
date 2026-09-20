@@ -25,7 +25,7 @@ export default function AnalyzingPage() {
   }, [analysis, contentId, content, navigate]);
 
   return (
-    <PageLayout className="items-center py-30">
+    <PageLayout className="items-center py-30 max-md:py-16">
       <AnalyzingIcon className="mb-10" />
 
       <h1 className="mb-2 text-2xl font-bold text-gray-900">검수 중이에요</h1>
