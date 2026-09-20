@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tokenStore } from '@/features/auth/store/tokenStore';
+import { IS_DEV_BYPASS_AUTH } from '@/shared/lib/devMode';
 import { saveAudienceProfile } from '@/features/auth/api/userApi';
 
 const questions = [
@@ -82,7 +83,7 @@ export default function OnboardingPage() {
         tokenStore.setUser({ name, email });
       }
       window.history.replaceState({}, '', '/onboarding');
-    } else if (!tokenStore.getToken()) {
+    } else if (!IS_DEV_BYPASS_AUTH && !tokenStore.getToken()) {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
