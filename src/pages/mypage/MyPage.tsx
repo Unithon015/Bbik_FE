@@ -152,7 +152,7 @@ export default function MyPage() {
           {/* 계정 정보 */}
           <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="divide-y divide-gray-100">
-              <div className="flex items-center gap-4 px-7 py-6">
+              <div className="flex items-center gap-4 px-7 py-6 max-md:px-5">
                 <div className="flex size-14 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
                   {(user?.name?.[0] ?? user?.email?.[0] ?? '').toUpperCase()}
                 </div>
@@ -161,7 +161,7 @@ export default function MyPage() {
                   <p className="text-sm text-gray-500">{user?.email}</p>
                 </div>
               </div>
-              <div className="px-7 py-5">
+              <div className="px-7 py-5 max-md:px-5">
                 <p className="mb-4 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                   계정 정보
                 </p>
@@ -187,7 +187,7 @@ export default function MyPage() {
 
           {/* 시청자 프로필 */}
           <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className="px-7 py-5">
+            <div className="px-7 py-5 max-md:px-5">
               <div className="mb-5 flex items-center justify-between">
                 <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                   시청자 프로필

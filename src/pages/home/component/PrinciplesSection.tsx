@@ -30,14 +30,17 @@ export default function PrinciplesSection() {
   const [activePrinciple, setActivePrinciple] = useState(0);
 
   return (
-    <section id="section-principles" className="bg-[#0e0e14] px-55 py-24">
-      <div className="grid grid-cols-2 items-start gap-16">
+    <section
+      id="section-principles"
+      className="bg-[#0e0e14] px-55 py-24 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:py-16 max-md:break-keep"
+    >
+      <div className="grid grid-cols-2 items-start gap-16 max-xl:gap-10 max-lg:grid-cols-1 max-lg:gap-12">
         {/* 왼쪽: 리스트 */}
         <div>
           <p className="mb-10 text-[14px] font-semibold tracking-[0.2em] text-[#c4afff] uppercase">
             CORE PRINCIPLES
           </p>
-          <h2 className="mb-14 text-[clamp(2rem,4vw,4rem)] leading-tight font-bold tracking-tight text-white">
+          <h2 className="mb-14 text-[clamp(2rem,4vw,4rem)] leading-tight font-bold tracking-tight text-white max-md:mb-8">
             삐빅이 살펴보는 방식.
           </h2>
 
@@ -52,14 +55,14 @@ export default function PrinciplesSection() {
                   className="border-t border-white/10 py-7 text-left transition-colors first:border-t-0"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-6 max-md:gap-3">
                       <span
-                        className={`text-[25px] font-semibold transition-colors ${isActive ? 'text-[#c4afff]' : 'text-gray-600'}`}
+                        className={`text-[25px] font-semibold transition-colors max-md:text-xl ${isActive ? 'text-[#c4afff]' : 'text-gray-600'}`}
                       >
                         {p.num}
                       </span>
                       <span
-                        className={`text-[25px] font-semibold transition-colors ${isActive ? 'text-white' : 'text-gray-500'}`}
+                        className={`text-[25px] font-semibold transition-colors max-md:text-xl ${isActive ? 'text-white' : 'text-gray-500'}`}
                       >
                         {p.label}
                       </span>
@@ -73,7 +76,7 @@ export default function PrinciplesSection() {
         </div>
 
         {/* 오른쪽: 키워드 + 설명 */}
-        <div className="flex items-center pt-[140px]">
+        <div className="flex items-center pt-[140px] max-lg:pt-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={activePrinciple}
@@ -85,10 +88,10 @@ export default function PrinciplesSection() {
               <p className="mb-6 text-[clamp(3rem,6vw,6rem)] leading-none font-bold tracking-tight text-[#c4afff]">
                 {principles[activePrinciple].keyword}
               </p>
-              <p className="mb-4 text-[clamp(2rem,1.8vw,1.5rem)] font-bold text-white">
+              <p className="mb-4 text-[clamp(2rem,1.8vw,1.5rem)] font-bold text-white max-md:text-2xl">
                 {principles[activePrinciple].subtitle}
               </p>
-              <p className="text-base leading-relaxed whitespace-pre-line text-gray-400">
+              <p className="text-base leading-relaxed whitespace-pre-line text-gray-400 max-md:whitespace-normal">
                 {principles[activePrinciple].desc}
               </p>
             </motion.div>

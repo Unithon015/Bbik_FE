@@ -8,8 +8,8 @@ interface Props {
 
 export default function FooterSection({ isLoggedIn }: Props) {
   return (
-    <footer className="bg-white px-55 pt-14 pb-10">
-      <div className="mb-10 flex items-start justify-between">
+    <footer className="bg-white px-55 pt-14 pb-10 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:pt-10">
+      <div className="mb-10 flex items-start justify-between max-md:flex-col max-md:gap-6">
         <div>
           <img src={bbikFullLogo} alt="삐빅" className="mb-4 h-8" />
           <p className="text-[14px] leading-relaxed text-gray-400">
@@ -36,7 +36,7 @@ export default function FooterSection({ isLoggedIn }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between border-t border-gray-100 pt-6">
+      <div className="flex items-center justify-between border-t border-gray-100 pt-6 max-md:flex-col max-md:items-start max-md:gap-4">
         <div>
           <p className="mb-1 text-[12px] text-gray-400">Bbik · AI CONTENT MONITORING</p>
           <p className="text-[12px] text-gray-400">

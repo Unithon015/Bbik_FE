@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { tokenStore } from '@/features/auth/store/tokenStore';
 import { refreshToken } from '@/features/auth/api/authApi';
+import { IS_DEV_BYPASS_AUTH } from '@/shared/lib/devMode';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -28,7 +29,7 @@ apiClient.interceptors.response.use(
         .then(() => {})
         .catch(() => {
           tokenStore.clear();
-          window.location.href = '/login';
+          if (!IS_DEV_BYPASS_AUTH) window.location.href = '/login';
         })
         .finally(() => {
           refreshing = null;

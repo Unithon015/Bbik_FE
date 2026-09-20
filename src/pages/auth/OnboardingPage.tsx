@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tokenStore } from '@/features/auth/store/tokenStore';
+import { IS_DEV_BYPASS_AUTH } from '@/shared/lib/devMode';
 import { saveAudienceProfile } from '@/features/auth/api/userApi';
 
 const questions = [
@@ -82,7 +83,7 @@ export default function OnboardingPage() {
         tokenStore.setUser({ name, email });
       }
       window.history.replaceState({}, '', '/onboarding');
-    } else if (!tokenStore.getToken()) {
+    } else if (!IS_DEV_BYPASS_AUTH && !tokenStore.getToken()) {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
@@ -103,7 +104,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen max-lg:h-auto max-lg:min-h-dvh">
       {/* Left Panel */}
       <div className="hidden w-1/2 flex-col justify-center bg-[#f0eeff] p-16 lg:flex">
         <div>
@@ -114,7 +115,7 @@ export default function OnboardingPage() {
             </span>
             처음 한 번만 설정해요
           </p>
-          <h1 className="mb-5 text-[38px] leading-tight font-bold tracking-tight text-gray-900">
+          <h1 className="mb-5 text-[38px] leading-tight font-bold tracking-tight text-gray-900 max-xl:text-3xl">
             내 컨텐츠를 보는 사람을
             <br />
             더 잘 이해할수록
@@ -137,7 +138,7 @@ export default function OnboardingPage() {
           />
 
           {/* Result card */}
-          <div className="absolute right-8 bottom-0 left-4 mx-25 rounded-2xl bg-white p-5 shadow-md">
+          <div className="absolute right-8 bottom-0 left-4 mx-25 rounded-2xl bg-white p-5 shadow-md max-xl:mx-0">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[15px] font-bold text-gray-900">검수 결과가 정리됐어요</span>
               <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700">
