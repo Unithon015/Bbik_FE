@@ -55,7 +55,7 @@ export type FindingStatus = 'PENDING' | 'RESOLVED' | 'DISMISSED';
 
 export interface Finding {
   id: string;
-  type: string[];
+  type: string | string[];
   category_code: string;
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   signal_type: string;
