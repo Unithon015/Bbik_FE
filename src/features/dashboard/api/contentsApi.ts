@@ -13,7 +13,7 @@ export interface Content {
   id: string;
   title: string;
   caption_text: string | null;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
   type: string[];
   assets: ContentAsset[];
   created_at: string;
@@ -96,7 +96,7 @@ export async function deleteFinding(contentId: string, findingId: string): Promi
 export interface ContentSummary {
   id: string;
   title: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
   pending_findings_count: number;
   completed_at: string | null;
   created_at: string;
