@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -111,7 +111,8 @@ function findingToItem(finding: Finding, idx: number): SensitiveItemData {
     description: finding.reason,
   };
 
-  const type = finding.type[0]?.toLowerCase();
+  const typeArr = Array.isArray(finding.type) ? finding.type : [finding.type];
+  const type = typeArr[0]?.toLowerCase();
 
   if (type === 'video' && finding.start_ms !== null) {
     return {
@@ -190,11 +191,20 @@ export default function ResultPage() {
 
   const isTextOnly =
     !!analysis && !analysis.type.includes('image') && !analysis.type.includes('video');
+
   const [userLayout, setLayout] = useState<'vertical' | 'horizontal' | null>(null);
   const layout = userLayout ?? (isTextOnly ? 'vertical' : 'horizontal');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [items, setItems] = useState<SensitiveItemData[]>(initialItems);
   const [modifiedIds, setModifiedIds] = useState<Set<number>>(new Set());
+
+  const seenAnalysisIdRef = useRef(analysis?.id);
+  useEffect(() => {
+    if (analysis?.id && analysis.id !== seenAnalysisIdRef.current) {
+      seenAnalysisIdRef.current = analysis.id;
+      setItems((analysis.findings ?? []).map(findingToItem));
+    }
+  }, [analysis]);
   const isHorizontal = layout === 'horizontal';
 
   const { mutate: resolveFinding } = useResolveFinding();
