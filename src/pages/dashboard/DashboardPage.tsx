@@ -1,6 +1,6 @@
 import { FileText, Plus, Video, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PageLayout from '@/shared/components/PageLayout';
 import RecentItem from '@/pages/dashboard/components/RecentItem';
 import { useCreateContent } from '@/features/dashboard/model/useCreateContent';
@@ -8,15 +8,15 @@ import { useGetMyContents } from '@/features/dashboard/model/useGetMyContents';
 import type { ContentSummary } from '@/features/dashboard/api/contentsApi';
 
 const STATUS_LABEL: Record<ContentSummary['status'], string> = {
-  pending: '검수 중',
-  completed: '분석 완료',
-  failed: '실패',
+  PENDING: '검수 중',
+  COMPLETED: '분석 완료',
+  FAILED: '실패',
 };
 
 const STATUS_COLOR: Record<ContentSummary['status'], string> = {
-  pending: 'bg-amber-50 text-amber-600',
-  completed: 'bg-green-50 text-green-600',
-  failed: 'bg-red-50 text-red-500',
+  PENDING: 'bg-amber-50 text-amber-600',
+  COMPLETED: 'bg-green-50 text-green-600',
+  FAILED: 'bg-red-50 text-red-500',
 };
 
 function formatDate(dateString: string): string {
@@ -37,11 +37,11 @@ function formatDate(dateString: string): string {
 }
 
 function getAlert(item: ContentSummary): string {
-  if (item.status === 'completed') {
+  if (item.status === 'COMPLETED') {
     return item.pending_findings_count > 0 ? `확인 필요 ${item.pending_findings_count}건` : '';
   }
-  if (item.status === 'pending') return '검수 진행 중';
-  if (item.status === 'failed') return '분석 실패';
+  if (item.status === 'PENDING') return '검수 진행 중';
+  if (item.status === 'FAILED') return '분석 실패';
   return '';
 }
 
@@ -57,11 +57,16 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [text, setText] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
+  const page = Number(searchParams.get('page')) || 1;
+  function setPage(updater: number | ((prev: number) => number)) {
+    const next = typeof updater === 'function' ? updater(page) : updater;
+    setSearchParams({ page: String(next) }, { replace: true });
+  }
   const { mutate: createContent, isPending } = useCreateContent();
   const { data: myContents, isLoading: isContentsLoading } = useGetMyContents(page);
 
@@ -214,7 +219,7 @@ export default function DashboardPage() {
               statusColor={STATUS_COLOR[item.status]}
               onClick={() =>
                 navigate(
-                  item.status === 'completed' ? '/dashboard/result' : '/dashboard/analyzing',
+                  item.status === 'COMPLETED' ? '/dashboard/result' : '/dashboard/analyzing',
                   { state: { contentId: item.id } },
                 )
               }
