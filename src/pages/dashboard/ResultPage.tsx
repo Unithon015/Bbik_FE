@@ -179,7 +179,7 @@ export default function ResultPage() {
   const analysisContent = content ? buildContent(content) : {};
   const initialItems: SensitiveItemData[] = (analysis?.findings ?? []).map(findingToItem);
 
-  const priorities = analysis?.findings.map((f) => f.priority) ?? [];
+  const priorities = (analysis?.findings ?? []).map((f) => f.priority);
   const overallPriority = priorities.includes('HIGH')
     ? 'HIGH'
     : priorities.includes('MEDIUM')
