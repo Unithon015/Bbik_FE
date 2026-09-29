@@ -47,7 +47,7 @@ export interface Evidence {
   layer: string;
   title: string;
   source_url: string;
-  excerpt: string;
+  excerpt: string | null;
   provider: string | null;
 }
 
@@ -60,7 +60,7 @@ export interface Finding {
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   signal_type: string;
   reason: string;
-  excerpt: string;
+  excerpt: string | null;
   status: FindingStatus;
   asset_id: string | null;
   start_ms: number | null;

@@ -107,7 +107,7 @@ function findingToItem(finding: Finding, idx: number): SensitiveItemData {
     findingId: finding.id,
     tag: finding.signal_type,
     tagColor: PRIORITY_COLOR[finding.priority] ?? 'bg-violet-100 text-violet-700',
-    title: finding.excerpt,
+    title: finding.excerpt ?? finding.signal_type,
     description: finding.reason,
   };
 
@@ -123,7 +123,7 @@ function findingToItem(finding: Finding, idx: number): SensitiveItemData {
     };
   }
 
-  return { ...base, type: 'text', keywords: [finding.excerpt] };
+  return { ...base, type: 'text', keywords: finding.excerpt ? [finding.excerpt] : [] };
 }
 
 function highlightText(
