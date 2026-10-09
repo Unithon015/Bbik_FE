@@ -68,7 +68,7 @@ export default function Navbar({ isLoggedIn = false }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <div className="flex h-22 items-center justify-between px-30 max-xl:px-20 max-lg:px-10 max-md:h-16 max-md:px-5">
+      <div className="flex h-20 items-center justify-between px-30 max-xl:px-20 max-lg:px-10 max-md:h-16 max-md:px-5">
         <Link to="/">
           <img src={bbikFullLogo} alt="삐빅" className="h-9 max-md:h-7" />
         </Link>
@@ -113,7 +113,7 @@ export default function Navbar({ isLoggedIn = false }: NavbarProps) {
             })}
             <Link
               to="/login"
-              className="flex items-center gap-1.5 rounded-full border border-gray-300 px-5 py-2 text-[17px] font-semibold text-gray-900 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-1.5 rounded-full border border-gray-300 bg-black px-5 py-2 text-[17px] font-semibold text-white transition-colors"
             >
               삐빅 시작하기
               <ArrowUpRight className="size-4" />
@@ -154,7 +154,7 @@ export default function Navbar({ isLoggedIn = false }: NavbarProps) {
           ))}
           <Link
             to="/login"
-            className="mt-3 flex items-center justify-center gap-1.5 rounded-full border border-gray-300 px-5 py-3 text-base font-semibold text-gray-900 transition-colors hover:bg-gray-50"
+            className="mt-3 flex items-center justify-center gap-1.5 rounded-full border border-gray-300 px-5 py-3 text-base font-semibold text-gray-900 transition-colors"
           >
             삐빅 시작하기
             <ArrowUpRight className="size-4" />
