@@ -1,4 +1,6 @@
 import { apiClient as dashboardApi } from '@/shared/api/apiClient';
+import { IS_DEV_MOCK } from '@/shared/lib/devMode';
+import { mockContent, mockContents, mockAnalysis } from '@/shared/mocks/mockData';
 
 export interface ContentAsset {
   id: string;
@@ -20,6 +22,7 @@ export interface Content {
 }
 
 export async function getContents(page = 1): Promise<{ items: Content[] }> {
+  if (IS_DEV_MOCK) return { items: [mockContent] };
   const { data } = await dashboardApi.get<{ items: Content[] }>('/contents', {
     params: { page },
   });
@@ -27,11 +30,18 @@ export async function getContents(page = 1): Promise<{ items: Content[] }> {
 }
 
 export async function getContent(contentId: string): Promise<Content> {
+  if (IS_DEV_MOCK) return mockContent;
   const { data } = await dashboardApi.get<Content>(`/contents/${contentId}`);
   return data;
 }
 
 export async function createContent(file: File | null, text: string): Promise<Content> {
+  if (IS_DEV_MOCK)
+    return {
+      ...mockContent,
+      id: `dev-content-${Date.now()}`,
+      title: text || file?.name || '새 콘텐츠',
+    };
   const formData = new FormData();
   if (file) formData.append('file', file);
   formData.append('text', text);
@@ -81,15 +91,18 @@ export interface Analysis {
 }
 
 export async function getAnalysis(contentId: string): Promise<Analysis> {
+  if (IS_DEV_MOCK) return mockAnalysis;
   const { data } = await dashboardApi.get<Analysis>(`/contents/${contentId}/analysis`);
   return data;
 }
 
 export async function resolveFinding(contentId: string, findingId: string): Promise<void> {
+  if (IS_DEV_MOCK) return;
   await dashboardApi.patch(`/contents/${contentId}/findings/${findingId}`);
 }
 
 export async function deleteFinding(contentId: string, findingId: string): Promise<void> {
+  if (IS_DEV_MOCK) return;
   await dashboardApi.delete(`/contents/${contentId}/findings/${findingId}`);
 }
 
@@ -107,6 +120,7 @@ export interface PaginatedContents {
 }
 
 export async function getMyContents(page = 1): Promise<PaginatedContents> {
+  if (IS_DEV_MOCK) return mockContents;
   const { data } = await dashboardApi.get<PaginatedContents>('/contents/me', {
     params: { page },
   });
