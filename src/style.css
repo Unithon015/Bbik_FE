@@ -1,5 +1,14 @@
-@import 'pretendard/dist/web/variable/pretendardvariable.css';
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'IBM Plex Sans KR', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+:root {
+  --font-sans: 'IBM Plex Sans KR', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
 
 @layer base {
   html {
@@ -9,10 +18,15 @@
     display: none;
   }
   body {
-    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-family: var(--font-sans);
+    word-break: keep-all;
     /* 반응형 최소 폭. 이보다 좁아지면 레이아웃 대신 가로 스크롤이 생긴다. */
     min-width: 360px;
   }
+}
+
+.mono {
+  font-family: var(--font-mono);
 }
 
 @keyframes gradient-shift {
