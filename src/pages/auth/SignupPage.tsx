@@ -91,7 +91,9 @@ export default function SignupPage() {
       <div className="flex w-full flex-col items-center justify-center bg-white px-8 max-lg:py-10 lg:w-1/2">
         <div className="w-full max-w-sm">
           <div className="mb-10 flex items-center gap-3">
-            <img src={bbikFullLogo} alt="삐빅" className="h-9" />
+            <Link to="/">
+              <img src={bbikFullLogo} alt="삐빅" className="h-9" />
+            </Link>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>

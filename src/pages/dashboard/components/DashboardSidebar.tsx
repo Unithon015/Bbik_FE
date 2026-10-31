@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import bbikFullLogo from '@/shared/assets/bbik-full-logo.svg';
 import { tokenStore } from '@/features/auth/store/tokenStore';
@@ -135,7 +135,9 @@ export default function DashboardSidebar() {
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-gray-100 bg-gray-50 transition-all duration-200">
       {/* 로고 + 토글 */}
       <div className="flex h-18 items-center justify-between px-4">
-        <img src={bbikFullLogo} alt="삐빅" className="h-8" />
+        <Link to="/">
+          <img src={bbikFullLogo} alt="삐빅" className="h-8" />
+        </Link>
         <button
           onClick={() => setIsCollapsed(true)}
           className="flex size-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
