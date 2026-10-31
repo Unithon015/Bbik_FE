@@ -1,4 +1,6 @@
 import { apiClient } from '@/shared/api/apiClient';
+import { IS_DEV_MOCK } from '@/shared/lib/devMode';
+import { mockUser, mockAudienceProfile } from '@/shared/mocks/mockData';
 
 export interface UserProfile {
   id: string;
@@ -7,6 +9,7 @@ export interface UserProfile {
 }
 
 export async function getMe(): Promise<UserProfile> {
+  if (IS_DEV_MOCK) return mockUser;
   const { data } = await apiClient.get<UserProfile>('/users/me');
   return data;
 }
@@ -25,10 +28,12 @@ export interface AudienceProfile extends AudienceProfilePayload {
 }
 
 export async function saveAudienceProfile(payload: AudienceProfilePayload): Promise<void> {
+  if (IS_DEV_MOCK) return;
   await apiClient.put('/users/me/audience-profile', payload);
 }
 
 export async function getAudienceProfile(): Promise<AudienceProfile> {
+  if (IS_DEV_MOCK) return mockAudienceProfile;
   const { data } = await apiClient.get<AudienceProfile>('/users/me/audience-profile');
   return data;
 }

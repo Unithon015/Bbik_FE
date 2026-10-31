@@ -189,11 +189,8 @@ export default function ResultPage() {
         ? 'LOW'
         : null;
 
-  const isTextOnly =
-    !!analysis && !analysis.type.includes('image') && !analysis.type.includes('video');
-
   const [userLayout, setLayout] = useState<'vertical' | 'horizontal' | null>(null);
-  const layout = userLayout ?? (isTextOnly ? 'vertical' : 'horizontal');
+  const layout = userLayout ?? 'horizontal';
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [items, setItems] = useState<SensitiveItemData[]>(initialItems);
   const [modifiedIds, setModifiedIds] = useState<Set<number>>(new Set());

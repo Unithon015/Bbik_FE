@@ -3,3 +3,4 @@
  * true일 때는 로그인 없이도 모든 페이지에 접근할 수 있다(UI 확인용, API 연동 X).
  */
 export const IS_DEV_BYPASS_AUTH = import.meta.env.DEV;
+export const IS_DEV_MOCK = import.meta.env.DEV;
