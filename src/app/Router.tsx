@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from './RootLayout';
-import ProtectedLayout from './ProtectedLayout';
+import DashboardLayout from './DashboardLayout';
 import HomePage from '@/pages/home/HomePage';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignupPage from '@/pages/auth/SignupPage';
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <ProtectedLayout />,
+    element: <DashboardLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'analyzing', element: <AnalyzingPage /> },
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/mypage',
-    element: <ProtectedLayout />,
+    element: <DashboardLayout />,
     children: [{ index: true, element: <MyPage /> }],
   },
   {
