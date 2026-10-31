@@ -11,7 +11,9 @@ export default function FooterSection({ isLoggedIn }: Props) {
     <footer className="bg-white px-55 pt-14 pb-10 max-xl:px-20 max-lg:px-10 max-md:px-5 max-md:pt-10">
       <div className="mb-10 flex items-start justify-between max-md:flex-col max-md:gap-6">
         <div>
-          <img src={bbikFullLogo} alt="삐빅" className="mb-4 h-8" />
+          <Link to="/" className="mb-4 inline-block">
+            <img src={bbikFullLogo} alt="삐빅" className="h-8" />
+          </Link>
           <p className="text-[14px] leading-relaxed text-gray-400">
             콘텐츠에 집중할 수 있도록.
             <br />

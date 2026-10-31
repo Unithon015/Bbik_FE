@@ -109,7 +109,9 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="mb-10 flex items-center gap-3">
-            <img src={bbikFullLogo} alt="삐빅" className="h-9" />
+            <Link to="/">
+              <img src={bbikFullLogo} alt="삐빅" className="h-9" />
+            </Link>
           </div>
 
           {/* Form */}
